@@ -1,0 +1,49 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/task 
+	     http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+	<!-- <mvc interceptors> -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/login/**" />
+			<mvc:exclude-mapping path="/api/**" />
+			<mvc:exclude-mapping path="/logout/**" />
+			<mvc:exclude-mapping path="/assets/**" />
+			<bean class="com.troppusweb.v2.utils.SessionInspector" />
+		</mvc:interceptor> 
+	</mvc:interceptors>
+	
+	<task:annotation-driven />
+
+	<context:component-scan base-package="com.madan"></context:component-scan>
+	
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>		
+		<property name="url" value="jdbc:mysql://192.168.1.6/tsystems?zeroDateTimeBehavior=convertToNull"></property>
+		<property name="username" value="troppus"></property>
+		<property name="password" value="1234567"></property>
+	</bean>  
+	
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<mvc:view-controller path="/" view-name="index" />
+	<tx:annotation-driven proxy-target-class="true" transaction-manager="txManager" />
+	<mvc:resources mapping="/assets/**" location="/assets/" cache-period="31556926" />
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+</beans>
